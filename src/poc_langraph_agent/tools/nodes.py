@@ -58,6 +58,8 @@ def _call_structured_agent(
     user_name: str,
     output_schema: Type,
     variables: Dict[str, Any],
+    *,
+    allow_text_fallback: bool = False,
 ):
     system_prompt = load_prompt(system_name)
     user_prompt = load_prompt(user_name)
@@ -84,6 +86,12 @@ def _call_structured_agent(
     try:
         payload = json.loads(text)
     except json.JSONDecodeError as exc:
+        if allow_text_fallback:
+            fallback_payload = {"message": text}
+            try:
+                return output_schema.model_validate(fallback_payload)
+            except Exception as text_exc:
+                raise AgentExecutionError(f"Validation error: {fallback_payload}") from text_exc
         raise AgentExecutionError(f"Failed to decode JSON: {text}") from exc
     try:
         return output_schema.model_validate(payload)
@@ -172,6 +180,7 @@ def response_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
             "order_agent_result": _format_json(order_result),
             "refund_agent_result": _format_json(refund_result),
         },
+        allow_text_fallback=True,
     )
     payload["response"] = result.message
     payload.setdefault("trace", []).append({"node": "response_agent.v1"})
