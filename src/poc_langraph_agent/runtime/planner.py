@@ -11,13 +11,20 @@ def _plan_from_intent(intent: IntentPayload) -> Plan:
     candidate = intent.route_candidates[0]
     nodes = []
     for index, agent_id in enumerate(candidate.agents):
+        if "response_agent" in agent_id:
+            timeout = 12000
+        elif "refund_agent" in agent_id:
+            timeout = 15000
+        else:
+            timeout = 8000
+
         nodes.append(
             PlannerNode(
                 id=f"step_{index+1}",
                 agent=agent_id,
                 input_key="payload",
                 output_key="payload",
-                timeout_ms=8000 if "response_agent" not in agent_id else 12000,
+                timeout_ms=timeout,
                 max_retries=2,
             )
         )

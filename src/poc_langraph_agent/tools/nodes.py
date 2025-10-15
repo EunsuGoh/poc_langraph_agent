@@ -4,12 +4,19 @@ from __future__ import annotations
 import json
 import uuid
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, Callable, Dict, Type
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import BaseMessage
 
-from ..runtime.datastore import get_order, load_refunds, record_refund
+from ..runtime.datastore import (
+    generate_order_id,
+    get_order,
+    load_refunds,
+    record_order,
+    record_refund,
+)
 from ..runtime.llm import MissingAPIKeyError, get_gemini
 from ..runtime.prompts import load_prompt
 from ..schemas import OrderAgentResult, RefundAgentResult, ResponseAgentResult
@@ -133,19 +140,44 @@ def order_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
             "refund_record": _format_json(refunds.get(order_id, {})),
         },
     )
+    created_new_order = False
+    if not order_record and result.order_status.lower() == "new_order_created":
+        new_order_id = order_id or generate_order_id()
+        now = datetime.utcnow()
+        order_record = {
+            "status": "created",
+            "placed_at": now.date().isoformat(),
+            "customer": {"name": "", "email": ""},
+            "items": [],
+            "total": 0,
+            "currency": "KRW",
+            "notes": f"신규 주문 생성: {query}",
+            "created_at": now.isoformat() + "Z",
+        }
+        record_order(new_order_id, order_record)
+        order_id = new_order_id
+        created_new_order = True
+
     payload["order_id"] = order_id
     payload["order"] = {
         "order_id": order_id,
         "record": order_record,
         "analysis": result.dict(),
+        "created": created_new_order,
     }
     payload["order_agent_result"] = result.dict()
     append_agent_trace(
         payload,
         agent_id="order_agent.v1",
         label="ORDER",
-        message=f"주문 상태 {result.order_status}",
+        message=(
+            f"신규 주문 생성 (ID: {order_id})"
+            if created_new_order
+            else f"주문 상태 {result.order_status}"
+        ),
         status=result.order_status,
+        created=created_new_order,
+        order_id=order_id,
     )
     return payload
 
@@ -158,6 +190,7 @@ def refund_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
     if not order_result:
         raise AgentExecutionError("order agent result missing")
 
+    order_record = get_order(order_id)
     refunds = load_refunds()
     result: RefundAgentResult = _call_structured_agent(
         "refund_agent_system",
@@ -166,6 +199,7 @@ def refund_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
         {
             "user_query": payload.get("query", ""),
             "order_agent_result": _format_json(order_result),
+            "order_record": _format_json(order_record),
             "refund_record": _format_json(refunds.get(order_id, {})),
         },
     )
@@ -184,6 +218,7 @@ def refund_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
     payload["refund"] = {
         "order_id": order_id,
         "result": result.dict(),
+        "order_record": order_record,
     }
     payload["refund_agent_result"] = result.dict()
     append_agent_trace(
@@ -193,6 +228,7 @@ def refund_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
         message=f"조치 {result.refund_action} (ID: {refund_id})",
         action=result.refund_action,
         refund_id=refund_id,
+        order_found=bool(order_record),
     )
     return payload
 

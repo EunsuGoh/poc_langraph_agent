@@ -8,8 +8,18 @@
       "email": "sky.kim@example.com"
     },
     "items": [
-      {"sku": "SKU-1001", "name": "무선 이어폰", "qty": 1, "price": 99000},
-      {"sku": "SKU-2032", "name": "실리콘 케이스", "qty": 1, "price": 12000}
+      {
+        "sku": "SKU-1001",
+        "name": "무선 이어폰",
+        "qty": 1,
+        "price": 99000
+      },
+      {
+        "sku": "SKU-2032",
+        "name": "실리콘 케이스",
+        "qty": 1,
+        "price": 12000
+      }
     ],
     "total": 111000,
     "currency": "KRW",
@@ -24,7 +34,12 @@
       "email": "younghee.lee@example.com"
     },
     "items": [
-      {"sku": "SKU-8870", "name": "모션 램프", "qty": 2, "price": 45000}
+      {
+        "sku": "SKU-8870",
+        "name": "모션 램프",
+        "qty": 2,
+        "price": 45000
+      }
     ],
     "total": 90000,
     "currency": "KRW",
@@ -39,7 +54,12 @@
       "email": "jisung.park@example.com"
     },
     "items": [
-      {"sku": "SKU-7771", "name": "커피 머신", "qty": 1, "price": 250000}
+      {
+        "sku": "SKU-7771",
+        "name": "커피 머신",
+        "qty": 1,
+        "price": 250000
+      }
     ],
     "total": 250000,
     "currency": "KRW",
@@ -54,7 +74,12 @@
       "email": "eunbi.cho@example.com"
     },
     "items": [
-      {"sku": "SKU-5511", "name": "스마트워치", "qty": 1, "price": 189000}
+      {
+        "sku": "SKU-5511",
+        "name": "스마트워치",
+        "qty": 1,
+        "price": 189000
+      }
     ],
     "total": 189000,
     "currency": "KRW",
@@ -69,10 +94,29 @@
       "email": "seoyoon.han@example.com"
     },
     "items": [
-      {"sku": "SKU-9001", "name": "블루투스 스피커", "qty": 1, "price": 78000}
+      {
+        "sku": "SKU-9001",
+        "name": "블루투스 스피커",
+        "qty": 1,
+        "price": 78000
+      }
     ],
     "total": 78000,
     "currency": "KRW",
     "notes": "고객 요청으로 취소"
+  },
+  {
+    "order_id": "ORD-435C90",
+    "status": "created",
+    "placed_at": "2025-10-15",
+    "customer": {
+      "name": "",
+      "email": ""
+    },
+    "items": [],
+    "total": 0,
+    "currency": "KRW",
+    "notes": "신규 주문 생성: 커피포트 주문 합니다. 고은수,시 다라동으로 배송 부탁.",
+    "created_at": "2025-10-15T06:29:22.291289Z"
   }
 ]
