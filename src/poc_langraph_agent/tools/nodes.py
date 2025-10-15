@@ -53,6 +53,24 @@ def _extract_text(message: Any) -> str:
     return str(message)
 
 
+def append_agent_trace(
+    payload: Dict[str, Any],
+    *,
+    agent_id: str,
+    label: str,
+    message: str | None = None,
+    **details: Any,
+) -> None:
+    """Record an agent-specific debug entry with a consistent prefix."""
+
+    trace = payload.setdefault("trace", [])
+    log_message = f"[{label} AGENT] {message}" if message else f"[{label} AGENT]"
+    entry = {"node": agent_id, "log": log_message}
+    if details:
+        entry.update(details)
+    trace.append(entry)
+
+
 def _call_structured_agent(
     system_name: str,
     user_name: str,
@@ -122,7 +140,13 @@ def order_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
         "analysis": result.dict(),
     }
     payload["order_agent_result"] = result.dict()
-    payload.setdefault("trace", []).append({"node": "order_agent.v1", "status": result.order_status})
+    append_agent_trace(
+        payload,
+        agent_id="order_agent.v1",
+        label="ORDER",
+        message=f"주문 상태 {result.order_status}",
+        status=result.order_status,
+    )
     return payload
 
 
@@ -162,8 +186,13 @@ def refund_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
         "result": result.dict(),
     }
     payload["refund_agent_result"] = result.dict()
-    payload.setdefault("trace", []).append(
-        {"node": "refund_agent.v1", "action": result.refund_action, "refund_id": refund_id}
+    append_agent_trace(
+        payload,
+        agent_id="refund_agent.v1",
+        label="REFUND",
+        message=f"조치 {result.refund_action} (ID: {refund_id})",
+        action=result.refund_action,
+        refund_id=refund_id,
     )
     return payload
 
@@ -183,7 +212,12 @@ def response_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
         allow_text_fallback=True,
     )
     payload["response"] = result.message
-    payload.setdefault("trace", []).append({"node": "response_agent.v1"})
+    append_agent_trace(
+        payload,
+        agent_id="response_agent.v1",
+        label="RESPONSE",
+        message="최종 답변 생성 완료",
+    )
     return payload
 
 

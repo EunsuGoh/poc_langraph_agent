@@ -1,1 +1,9 @@
 .env
+__pycache__/
+*/.pytest_cache/
+*/.coverage
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz

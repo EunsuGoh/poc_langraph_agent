@@ -7,9 +7,19 @@ from langgraph.graph import END, StateGraph
 
 from ..intent import build_intent_chain
 from ..schemas import IntentPayload, Plan, RouterState
+from ..tools.nodes import append_agent_trace
 from .executor import Executor
 from .planner import build_planner_chain
 from .safety import contains_forbidden_term, mask_pii
+
+
+def _format_plan_tree(plan: Plan) -> str:
+    lines = [f"plan_id={plan.plan_id}"]
+    total = len(plan.nodes)
+    for index, node in enumerate(plan.nodes):
+        prefix = "|-" if index < total - 1 else "\\-"
+        lines.append(f"{prefix} {node.id}: {node.agent}")
+    return "\n".join(lines)
 
 
 def _preprocess_node(state: Dict[str, Any]) -> Dict[str, Any]:
@@ -34,6 +44,15 @@ def _plan_node(state: Dict[str, Any]) -> Dict[str, Any]:
     plan: Plan = planner_chain.invoke({"intent": state["intent"]})
     state["plan"] = plan
     state.setdefault("transcript", []).append(plan.plan_id)
+    payload = state.setdefault("payload", {})
+    append_agent_trace(
+        payload,
+        agent_id="plan_agent.v1",
+        label="PLAN",
+        message="그래프 계획 생성 완료",
+        dag=_format_plan_tree(plan),
+        plan=plan.dict(),
+    )
     return state
 
 
