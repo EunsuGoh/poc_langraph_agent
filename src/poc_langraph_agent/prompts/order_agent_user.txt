@@ -1,0 +1,20 @@
+고객 발화:
+"""
+{user_query}
+"""
+
+감지된 주문번호: {order_id}
+주문 데이터(JSON):
+{order_record}
+현재 환불 기록: {refund_record}
+
+지침:
+1. 주문번호가 비어 있거나 주문 데이터를 찾을 수 없으면 order_status에 "not_found"를 설정하고, notes에 문제 원인을 간단히 설명합니다.
+2. 주문 데이터가 존재하면 주문 상태를 한글로 요약하여 order_status에 입력합니다 (예: "배송 완료", "배송중", "준비중").
+3. 환불 가능 여부를 refund_eligible에 true/false로 명시하고, 근거를 notes 배열에 2개 이하로 작성합니다.
+4. 모든 응답은 다음 JSON 스키마를 지켜야 합니다.
+{{
+  "order_status": "string",
+  "refund_eligible": true,
+  "notes": ["string"]
+}}

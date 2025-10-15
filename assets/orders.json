@@ -1,0 +1,73 @@
+{
+  "ORD-39422": {
+    "status": "delivered",
+    "placed_at": "2024-04-02",
+    "customer": {
+      "name": "김하늘",
+      "email": "sky.kim@example.com"
+    },
+    "items": [
+      {"sku": "SKU-1001", "name": "무선 이어폰", "qty": 1, "price": 99000},
+      {"sku": "SKU-2032", "name": "실리콘 케이스", "qty": 1, "price": 12000}
+    ],
+    "total": 111000,
+    "currency": "KRW",
+    "notes": "배송 완료 후 7일 이내 환불 가능"
+  },
+  "ORD-30110": {
+    "status": "shipped",
+    "placed_at": "2024-04-08",
+    "customer": {
+      "name": "이영희",
+      "email": "younghee.lee@example.com"
+    },
+    "items": [
+      {"sku": "SKU-8870", "name": "모션 램프", "qty": 2, "price": 45000}
+    ],
+    "total": 90000,
+    "currency": "KRW",
+    "notes": "배송 중, 도착 후 7일 이내 환불 가능"
+  },
+  "ORD-78901": {
+    "status": "processing",
+    "placed_at": "2024-04-14",
+    "customer": {
+      "name": "박지성",
+      "email": "jisung.park@example.com"
+    },
+    "items": [
+      {"sku": "SKU-7771", "name": "커피 머신", "qty": 1, "price": 250000}
+    ],
+    "total": 250000,
+    "currency": "KRW",
+    "notes": "결제 확인 중"
+  },
+  "ORD-88990": {
+    "status": "delivered",
+    "placed_at": "2024-03-25",
+    "customer": {
+      "name": "조은비",
+      "email": "eunbi.cho@example.com"
+    },
+    "items": [
+      {"sku": "SKU-5511", "name": "스마트워치", "qty": 1, "price": 189000}
+    ],
+    "total": 189000,
+    "currency": "KRW",
+    "notes": "배송 완료 후 7일 환불 기간 경과"
+  },
+  "ORD-51234": {
+    "status": "cancelled",
+    "placed_at": "2024-02-18",
+    "customer": {
+      "name": "한서윤",
+      "email": "seoyoon.han@example.com"
+    },
+    "items": [
+      {"sku": "SKU-9001", "name": "블루투스 스피커", "qty": 1, "price": 78000}
+    ],
+    "total": 78000,
+    "currency": "KRW",
+    "notes": "고객 요청으로 취소"
+  }
+}
